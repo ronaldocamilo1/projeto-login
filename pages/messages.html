@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Mensagens</title>
+    <script src="../js/jquery-3.6.4.min.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/login.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+<body onload="inicializarMensagens()">
+    <h1>Mensagens</h1>
+
+    <div>
+        <textarea id="textoMensagem" placeholder="Digite uma mensagem..."></textarea>
+        <br>
+        <button onclick="enviarMensagem()">Enviar</button>
+    </div>
+
+    <hr>
+
+    <h2>Lista de mensagens</h2>
+    <ul id="listaMensagens"></ul>
+
+    <script src="../js/jquery-3.6.4.min.js"></script>
+    <script src="../js/login.js"></script>
+    <script>
+        // Inicializa a página
+        function inicializarMensagens() {
+            validarLogin();       // bloqueia acesso se não estiver logado
+            carregarMensagens();  // carrega mensagens do localStorage
+        }
+
+        // Funções de mensagens (já existentes)
+        function getMensagens() {
+            return JSON.parse(localStorage.getItem("mensagens")) || [];
+        }
+
+        function salvarMensagens(lista) {
+            localStorage.setItem("mensagens", JSON.stringify(lista));
+        }
+
+        function enviarMensagem() {
+            const texto = $("#textoMensagem").val().trim();
+            if (texto === "") {
+                alert("Digite uma mensagem!");
+                return;
+            }
+
+            let mensagens = getMensagens();
+            mensagens.push({ id: Date.now(), texto: texto });
+            salvarMensagens(mensagens);
+
+            $("#textoMensagem").val("");
+            carregarMensagens();
+        }
+
+        function carregarMensagens() {
+            let mensagens = getMensagens();
+            $("#listaMensagens").empty();
+
+            mensagens.forEach(msg => {
+                $("#listaMensagens").append(`
+                    <li>
+                        ${msg.texto}
+                        <button onclick="excluirMensagem(${msg.id})">Excluir</button>
+                    </li>
+                `);
+            });
+        }
+
+        function excluirMensagem(id) {
+            let mensagens = getMensagens();
+            mensagens = mensagens.filter(msg => msg.id !== id);
+            salvarMensagens(mensagens);
+            carregarMensagens();
+        }
+    </script>
+</body>
+
+
+</body>
+</html>
